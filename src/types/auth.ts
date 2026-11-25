@@ -78,11 +78,16 @@ export interface AuthSession {
   userId: string;
   name: string;
   username?: string;
+  fullName?: string;
   email: string;
   role: Role;
   avatar: string;
   loginTimestamp: number;
   token?: string;
+  phoneNumber?: string;
+  address?: string;
+  guardianName?: string;
+  dateOfBirth?: string;
   // Role-specific identity attributes
   teacherProfile?: TeacherProfileData;
   studentProfile?: StudentProfileData;
@@ -105,7 +110,12 @@ export interface BackendUser {
   userId: number;
   username: string;
   email?: string;
+  fullName?: string;
   role: string;
+  phoneNumber?: string | null;
+  address?: string | null;
+  guardianName?: string | null;
+  dateOfBirth?: string | null;
 }
 
 export interface BackendLoginResponse {

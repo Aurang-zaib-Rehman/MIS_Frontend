@@ -117,7 +117,7 @@ export async function runIntegrationTests() {
     assert.equal(session.email, "student@gmail.com");
     assert.notEqual(session.token, undefined);
     assert.ok(session.token.startsWith("eyJ"));
-    assert.equal(ROLE_DEFAULT_REDIRECTS[session.role], "/student/dashboard");
+    assert.equal(ROLE_DEFAULT_REDIRECTS[session.role], "/student/profile");
     assert.notEqual(session.studentProfile, undefined);
 
     studentToken = session.token;
@@ -226,7 +226,9 @@ export async function runIntegrationTests() {
     assert.equal(isRouteAuthorizedForRole("STUDENT", "/teacher/dashboard"), false);
 
     assert.equal(isRouteAuthorizedForRole("STUDENT", "/student/dashboard"), true);
+    assert.equal(isRouteAuthorizedForRole("STUDENT", "/student/profile"), true);
     assert.equal(isRouteAuthorizedForRole("TEACHER", "/student/dashboard"), false);
+    assert.equal(isRouteAuthorizedForRole("TEACHER", "/student/profile"), false);
   });
 
   // SUITE 9: Logout Cleanup

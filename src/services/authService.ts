@@ -57,6 +57,26 @@ export class AuthService {
   }
 
   /**
+   * Registers a new student account via POST /api/auth/register
+   * Does NOT return a JWT token or create an authenticated session (no auto-login).
+   */
+  public static async register(data: {
+    fullName: string;
+    email: string;
+    password: string;
+    guardianName?: string;
+    phoneNumber?: string;
+    dateOfBirth?: string;
+    address?: string;
+  }): Promise<{ message: string; user?: unknown }> {
+    return apiClient.post<{ message: string; user?: unknown }>(
+      "/api/auth/register",
+      data,
+      { skipAuth: true }
+    );
+  }
+
+  /**
    * Authenticates against the real backend via POST /api/auth/login
    */
   public static async login(credentials: LoginCredentials): Promise<AuthSession> {
@@ -107,13 +127,18 @@ export class AuthService {
 
     const session: AuthSession = {
       userId: String(user.userId),
-      name: user.username,
+      name: user.fullName || user.username,
       username: user.username,
+      fullName: user.fullName || user.username,
       email: userEmail,
       role: finalRole,
       avatar: finalRole === "ADMIN" ? "/images/user/muhtamim.jpeg" : "/images/user/user-01.jpg",
       loginTimestamp: Date.now(),
       token,
+      phoneNumber: user.phoneNumber || undefined,
+      address: user.address || undefined,
+      guardianName: user.guardianName || undefined,
+      dateOfBirth: user.dateOfBirth || undefined,
       ...(finalRole === "TEACHER" ? { teacherProfile: ROLE_PROFILES.TEACHER.teacherProfile } : {}),
       ...(finalRole === "STUDENT" ? { studentProfile: ROLE_PROFILES.STUDENT.studentProfile } : {}),
     };

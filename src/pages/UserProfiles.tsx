@@ -5,7 +5,7 @@ import DangerZone from "@/components/UserProfile/DangerZone";
 import Security from "@/components/UserProfile/Security";
 import UserAddressCard from "@/components/UserProfile/UserAddressCard";
 import UserMetaCard from "@/components/UserProfile/UserMetaCard";
-import StudentIdCard from "@/components/student/StudentIdCard";
+import StudentProfilePage from "./Student/StudentProfilePage";
 import TeacherIdCard from "@/components/teacher/TeacherIdCard";
 import TeacherOwnAttendanceCard from "@/components/teacher/TeacherOwnAttendanceCard";
 import TeacherSalaryCard from "@/components/teacher/TeacherSalaryCard";
@@ -17,6 +17,11 @@ export default function UserProfiles() {
   const isAdmin = currentUser?.role === "ADMIN";
   const isStudent = currentUser?.role === "STUDENT";
   const isTeacher = currentUser?.role === "TEACHER";
+
+  // Dedicated Student Profile Experience
+  if (isStudent) {
+    return <StudentProfilePage />;
+  }
 
   const [teacherView, setTeacherView] = useState<
     "profile" | "attendance" | "salary"
@@ -94,7 +99,6 @@ export default function UserProfiles() {
             User Identity & Credentials
           </h3>
           <div className="space-y-6">
-            {isStudent && <StudentIdCard />}
             {isTeacher && <TeacherIdCard />}
             <UserMetaCard />
             <UserAddressCard />

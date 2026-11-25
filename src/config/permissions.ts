@@ -86,7 +86,7 @@ export const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
 export const ROLE_DEFAULT_REDIRECTS: Record<Role, string> = {
   ADMIN: "/dashboard",
   TEACHER: "/teacher/dashboard",
-  STUDENT: "/student/dashboard",
+  STUDENT: "/student/profile",
 };
 
 /**
@@ -109,6 +109,7 @@ export const ROUTE_ROLE_ACCESS: Record<string, Role[]> = {
   "/blank": ["ADMIN"], // Generic template blank page — restricted to Admin
 
   // Student Portal Modules
+  "/student/profile": ["STUDENT", "ADMIN"],
   "/student/dashboard": ["STUDENT", "ADMIN"],
   "/student/results": ["STUDENT", "ADMIN"],
   "/student/fees": ["STUDENT", "ADMIN"],

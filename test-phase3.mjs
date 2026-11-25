@@ -103,10 +103,10 @@ export async function runTests() {
     assert.equal(Array.isArray(profile.teacherProfile?.assignedClasses), true);
   });
 
-  test("2.3 Student role profile maps to /student/dashboard", () => {
+  test("2.3 Student role profile maps to /student/profile", () => {
     const profile = ROLE_PROFILES.STUDENT;
     assert.equal(profile.role, "STUDENT");
-    assert.equal(ROLE_DEFAULT_REDIRECTS[profile.role], "/student/dashboard");
+    assert.equal(ROLE_DEFAULT_REDIRECTS[profile.role], "/student/profile");
     assert.equal(profile.studentProfile?.studentId, "STD-1447-042");
     assert.equal(profile.studentProfile?.darja, "Darja Saniya (Year 2)");
   });

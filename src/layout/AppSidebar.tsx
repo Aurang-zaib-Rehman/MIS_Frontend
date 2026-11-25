@@ -82,7 +82,7 @@ const studentNavItems: NavItem[] = [
     icon: <UserCircleIcon fontSize={24} />,
     name: "Profile",
     key: "studentProfile",
-    path: "/profile",
+    path: "/student/profile",
   },
 ];
 

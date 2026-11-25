@@ -32,6 +32,17 @@ export default function SignInForm() {
     }
   }, [isAuthenticated, currentUser, navigate, location.state, getRoleDefaultPath]);
 
+  // If redirected from successful student registration, pre-populate email and show success message
+  useEffect(() => {
+    const state = location.state as { registeredEmail?: string; message?: string } | null;
+    if (state?.registeredEmail) {
+      setEmail(state.registeredEmail);
+    }
+    if (state?.message) {
+      setSuccessMessage(state.message);
+    }
+  }, [location.state]);
+
   // Standard form submission handler (Connected to POST /api/auth/login)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -34,6 +34,7 @@ import BarChart from "./pages/Charts/BarChart";
 
 // Student Portal Pages
 import StudentDashboard from "./pages/Student/StudentDashboard";
+import StudentProfilePage from "./pages/Student/StudentProfilePage";
 import StudentResults from "./pages/Student/StudentResults";
 import StudentFeeRecord from "./pages/Student/StudentFeeRecord";
 import StudentAttendance from "./pages/Student/StudentAttendance";
@@ -80,6 +81,7 @@ export default function App() {
             <Route path="/attendance" element={<AdminAttendancePage />} />
 
             {/* Student Portal Routes */}
+            <Route path="/student/profile" element={<StudentProfilePage />} />
             <Route path="/student/dashboard" element={<StudentDashboard />} />
             <Route path="/student/results" element={<StudentResults />} />
             <Route path="/student/fees" element={<StudentFeeRecord />} />
