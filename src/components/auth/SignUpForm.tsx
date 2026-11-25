@@ -1,55 +1,73 @@
-import Label from "@/components/form/Label";
-import Checkbox from "@/components/form/input/Checkbox";
-import Input from "@/components/form/input/InputField";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router";
 import Alert from "@/components/ui/alert/Alert";
 import Button from "@/components/ui/button/Button";
-import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
+import { ChevronLeftIcon } from "@/icons";
 import { MotionFadeIn } from "@/components/public/Motion";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router";
 import { AuthService } from "@/services/authService";
+import {
+  StudentRegistrationFields,
+  type StudentRegistrationFormValues,
+} from "./StudentRegistrationFields";
+
+const initialFormValues: StudentRegistrationFormValues = {
+  firstName: "",
+  lastName: "",
+  guardianName: "",
+  email: "",
+  phoneNumber: "",
+  dateOfBirth: "",
+  address: "",
+  password: "",
+  isChecked: true,
+};
 
 export default function SignUpForm() {
   const navigate = useNavigate();
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [guardianName, setGuardianName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState("");
-  const [address, setAddress] = useState("");
-  const [password, setPassword] = useState("");
+  const [formValues, setFormValues] =
+    useState<StudentRegistrationFormValues>(initialFormValues);
   const [showPassword, setShowPassword] = useState(false);
-  const [isChecked, setIsChecked] = useState(true);
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const handleFieldChange = <K extends keyof StudentRegistrationFormValues>(
+    field: K,
+    value: StudentRegistrationFormValues[K]
+  ) => {
+    setFormValues((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
     setSuccessMessage(null);
 
-    const fullName = [firstName.trim(), lastName.trim()].filter(Boolean).join(" ");
+    const fullName = [
+      formValues.firstName.trim(),
+      formValues.lastName.trim(),
+    ]
+      .filter(Boolean)
+      .join(" ");
+
     if (!fullName) {
       setErrorMessage("Please enter your name.");
       return;
     }
 
-    const trimmedEmail = email.trim();
+    const trimmedEmail = formValues.email.trim();
     if (!trimmedEmail) {
       setErrorMessage("Please enter a valid email address.");
       return;
     }
 
-    if (!password || password.length < 6) {
+    if (!formValues.password || formValues.password.length < 6) {
       setErrorMessage("Password must be at least 6 characters long.");
       return;
     }
 
-    if (!isChecked) {
+    if (!formValues.isChecked) {
       setErrorMessage("Please accept the terms and conditions to register.");
       return;
     }
@@ -59,15 +77,16 @@ export default function SignUpForm() {
       const response = await AuthService.register({
         fullName,
         email: trimmedEmail,
-        password,
-        guardianName: guardianName.trim() || undefined,
-        phoneNumber: phoneNumber.trim() || undefined,
-        dateOfBirth: dateOfBirth || undefined,
-        address: address.trim() || undefined,
+        password: formValues.password,
+        guardianName: formValues.guardianName.trim() || undefined,
+        phoneNumber: formValues.phoneNumber.trim() || undefined,
+        dateOfBirth: formValues.dateOfBirth || undefined,
+        address: formValues.address.trim() || undefined,
       });
 
       setSuccessMessage(
-        response.message || "Registration successful! Redirecting you to the sign-in page..."
+        response.message ||
+          "Registration successful! Redirecting you to the sign-in page..."
       );
 
       // Strictly redirect to Sign In page after registration — NO auto-login, NO dashboard
@@ -76,7 +95,8 @@ export default function SignUpForm() {
           replace: true,
           state: {
             registeredEmail: trimmedEmail,
-            message: "Student account created successfully! Please sign in with your email and password.",
+            message:
+              "Student account created successfully! Please sign in with your email and password.",
           },
         });
       }, 1500);
@@ -141,177 +161,36 @@ export default function SignUpForm() {
             </div>
           )}
 
-          <div>
-            <form onSubmit={handleSubmit}>
-              <div className="space-y-4">
-                {/* First and Last Name */}
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div>
-                    <Label>
-                      First Name<span className="text-error-500">*</span>
-                    </Label>
-                    <Input
-                      type="text"
-                      id="fname"
-                      name="fname"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      placeholder="e.g. Muhammad"
-                      required
-                    />
-                  </div>
+          <form onSubmit={handleSubmit}>
+            <StudentRegistrationFields
+              values={formValues}
+              onChange={handleFieldChange}
+              showPassword={showPassword}
+              onTogglePassword={() => setShowPassword(!showPassword)}
+            />
 
-                  <div>
-                    <Label>
-                      Last Name<span className="text-error-500">*</span>
-                    </Label>
-                    <Input
-                      type="text"
-                      id="lname"
-                      name="lname"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      placeholder="e.g. Bilal"
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Father / Guardian Name */}
-                <div>
-                  <Label>
-                    Father / Guardian Name
-                  </Label>
-                  <Input
-                    type="text"
-                    id="guardian"
-                    name="guardian"
-                    value={guardianName}
-                    onChange={(e) => setGuardianName(e.target.value)}
-                    placeholder="e.g. Hafiz Muhammad Akbar"
-                  />
-                </div>
-
-                {/* Email Address */}
-                <div>
-                  <Label>
-                    Email Address<span className="text-error-500">*</span>
-                  </Label>
-                  <Input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="student@example.com"
-                    required
-                  />
-                </div>
-
-                {/* Password */}
-                <div>
-                  <Label>
-                    Password<span className="text-error-500">*</span>
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      placeholder="Enter minimum 6 characters"
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                    <span
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-e-4 top-1/2 z-30 -translate-y-1/2 cursor-pointer"
-                    >
-                      {showPassword ? (
-                        <EyeIcon className="size-5 fill-gray-500 dark:fill-gray-400" />
-                      ) : (
-                        <EyeCloseIcon className="size-5 fill-gray-500 dark:fill-gray-400" />
-                      )}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Phone Number & Date of Birth */}
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div>
-                    <Label>Contact / Phone</Label>
-                    <Input
-                      type="text"
-                      id="phone"
-                      name="phone"
-                      value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      placeholder="0300-1234567"
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Date of Birth</Label>
-                    <Input
-                      type="date"
-                      id="dob"
-                      name="dob"
-                      value={dateOfBirth}
-                      onChange={(e) => setDateOfBirth(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                {/* Residential Address */}
-                <div>
-                  <Label>Current Residential Address</Label>
-                  <Input
-                    type="text"
-                    id="address"
-                    name="address"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    placeholder="e.g. Faisalabad / Hostel Room No."
-                  />
-                </div>
-
-                {/* Checkbox */}
-                <div className="flex items-center gap-3 pt-1">
-                  <Checkbox
-                    className="h-5 w-5"
-                    checked={isChecked}
-                    onChange={setIsChecked}
-                  />
-                  <p className="inline-block text-xs font-normal text-gray-500 dark:text-gray-400">
-                    I agree to the Madrassa{" "}
-                    <span className="font-semibold text-gray-800 dark:text-white/90">
-                      Academic Regulations & Terms of Service
-                    </span>
-                  </p>
-                </div>
-
-                {/* Submit Button */}
-                <div className="pt-2">
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="flex w-full items-center justify-center rounded-lg bg-brand-500 px-4 py-3 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600 disabled:opacity-50"
-                  >
-                    {isSubmitting ? "Creating Account..." : "Sign Up as Student"}
-                  </Button>
-                </div>
-              </div>
-            </form>
-
-            <div className="mt-5 pb-6 sm:pb-8">
-              <p className="text-center text-sm font-normal text-gray-700 sm:text-start dark:text-gray-400">
-                Already registered?{" "}
-                <Link
-                  to="/signin"
-                  className="font-medium text-brand-500 hover:text-brand-600 dark:text-brand-400"
-                >
-                  Sign In to Your Account
-                </Link>
-              </p>
+            {/* Submit Button */}
+            <div className="pt-5">
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="flex w-full items-center justify-center rounded-lg bg-brand-500 px-4 py-3 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600 disabled:opacity-50"
+              >
+                {isSubmitting ? "Creating Account..." : "Sign Up as Student"}
+              </Button>
             </div>
+          </form>
+
+          <div className="mt-5 pb-6 sm:pb-8">
+            <p className="text-center text-sm font-normal text-gray-700 sm:text-start dark:text-gray-400">
+              Already registered?{" "}
+              <Link
+                to="/signin"
+                className="font-medium text-brand-500 hover:text-brand-600 dark:text-brand-400"
+              >
+                Sign In to Your Account
+              </Link>
+            </p>
           </div>
         </div>
       </MotionFadeIn>
