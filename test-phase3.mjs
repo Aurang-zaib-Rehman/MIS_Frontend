@@ -85,39 +85,30 @@ export async function runTests() {
   });
 
   // =========================================================================
-  // SUITE 2: 1-Click Direct Role Login (No Login Credentials Needed)
+  // SUITE 2: Role Profiles & Default Route Mapping (All 3 Roles)
   // =========================================================================
-  test("2.1 Admin 1-click role activation creates session and lands at /dashboard", () => {
-    sessionStorage.clear();
-    const session = AuthService.loginAsRole("ADMIN");
-
-    assert.equal(session.role, "ADMIN");
-    assert.equal(session.email, "admin@madrassa.com");
-    assert.equal(ROLE_DEFAULT_REDIRECTS[session.role], "/dashboard");
-    assert.equal("password" in session, false);
-    assert.equal("passwordHash" in session, false);
+  test("2.1 Admin role profile maps to /dashboard", () => {
+    const profile = ROLE_PROFILES.ADMIN;
+    assert.equal(profile.role, "ADMIN");
+    assert.equal(ROLE_DEFAULT_REDIRECTS[profile.role], "/dashboard");
+    assert.equal("password" in profile, false);
+    assert.equal("passwordHash" in profile, false);
   });
 
-  test("2.2 Teacher 1-click role activation creates session and lands at /teacher/dashboard", () => {
-    sessionStorage.clear();
-    const session = AuthService.loginAsRole("TEACHER");
-
-    assert.equal(session.role, "TEACHER");
-    assert.equal(session.email, "teacher@madrassa.com");
-    assert.equal(ROLE_DEFAULT_REDIRECTS[session.role], "/teacher/dashboard");
-    assert.equal(session.teacherProfile?.teacherId, "TCH-004");
-    assert.equal(Array.isArray(session.teacherProfile?.assignedClasses), true);
+  test("2.2 Teacher role profile maps to /teacher/dashboard", () => {
+    const profile = ROLE_PROFILES.TEACHER;
+    assert.equal(profile.role, "TEACHER");
+    assert.equal(ROLE_DEFAULT_REDIRECTS[profile.role], "/teacher/dashboard");
+    assert.equal(profile.teacherProfile?.teacherId, "TCH-004");
+    assert.equal(Array.isArray(profile.teacherProfile?.assignedClasses), true);
   });
 
-  test("2.3 Student 1-click role activation creates session and lands at /student/dashboard", () => {
-    sessionStorage.clear();
-    const session = AuthService.loginAsRole("STUDENT");
-
-    assert.equal(session.role, "STUDENT");
-    assert.equal(session.email, "student@madrassa.com");
-    assert.equal(ROLE_DEFAULT_REDIRECTS[session.role], "/student/dashboard");
-    assert.equal(session.studentProfile?.studentId, "STD-1447-042");
-    assert.equal(session.studentProfile?.darja, "Darja Saniya (Year 2)");
+  test("2.3 Student role profile maps to /student/dashboard", () => {
+    const profile = ROLE_PROFILES.STUDENT;
+    assert.equal(profile.role, "STUDENT");
+    assert.equal(ROLE_DEFAULT_REDIRECTS[profile.role], "/student/dashboard");
+    assert.equal(profile.studentProfile?.studentId, "STD-1447-042");
+    assert.equal(profile.studentProfile?.darja, "Darja Saniya (Year 2)");
   });
 
   // =========================================================================

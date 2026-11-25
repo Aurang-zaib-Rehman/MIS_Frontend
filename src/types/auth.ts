@@ -72,16 +72,18 @@ export interface StudentProfileData {
 }
 
 /**
- * Session data stored in localStorage (NEVER includes passwords)
+ * Session data stored in secure storage (NEVER includes passwords)
  */
 export interface AuthSession {
   userId: string;
   name: string;
+  username?: string;
   email: string;
   role: Role;
   avatar: string;
   loginTimestamp: number;
-  // Role-specific mock identity attributes
+  token?: string;
+  // Role-specific identity attributes
   teacherProfile?: TeacherProfileData;
   studentProfile?: StudentProfileData;
 }
@@ -90,9 +92,38 @@ export interface AuthSession {
  * Credentials passed during sign-in
  */
 export interface LoginCredentials {
-  email: string;
+  username?: string;
+  email?: string;
   password: string;
   rememberMe?: boolean;
+}
+
+/**
+ * Backend API Response Contracts (Phase 4.1 Integration)
+ */
+export interface BackendUser {
+  userId: number;
+  username: string;
+  email?: string;
+  role: string;
+}
+
+export interface BackendLoginResponse {
+  message: string;
+  token: string;
+  user: BackendUser;
+}
+
+export interface BackendMeUser {
+  userId: number;
+  role: string;
+  iat: number;
+  exp: number;
+}
+
+export interface BackendMeResponse {
+  message: string;
+  user: BackendMeUser;
 }
 
 /**

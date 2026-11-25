@@ -3,17 +3,16 @@ import Checkbox from "@/components/form/input/Checkbox";
 import Input from "@/components/form/input/InputField";
 import Button from "@/components/ui/button/Button";
 import Alert from "@/components/ui/alert/Alert";
-import { ChevronLeftIcon, EyeCloseIcon, EyeIcon, DashboardAltIcon, CalendarAltIcon, UserCircleIcon } from "@/icons";
+import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
 import { MotionFadeIn } from "@/components/public/Motion";
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useAuth } from "@/context/AuthContext";
-import type { Role } from "@/types/auth";
 
 export default function SignInForm() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { currentUser, isAuthenticated, loginAsRole, login, getRoleDefaultPath } = useAuth();
+  const { currentUser, isAuthenticated, login, getRoleDefaultPath } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +22,7 @@ export default function SignInForm() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // If already authenticated, redirect to authorized landing
+  // If already authenticated with real backend session, redirect to authorized landing
   useEffect(() => {
     if (isAuthenticated && currentUser) {
       const destination =
@@ -33,23 +32,7 @@ export default function SignInForm() {
     }
   }, [isAuthenticated, currentUser, navigate, location.state, getRoleDefaultPath]);
 
-  // 1-Click Direct Role Login handler
-  const handleRoleSelect = (role: Role) => {
-    setErrorMessage(null);
-    setSuccessMessage(`Entering as ${role}...`);
-    const session = loginAsRole(role);
-
-    const requestedPath = (location.state as { from?: { pathname?: string } })?.from?.pathname;
-    const destination = requestedPath && requestedPath !== "/signin"
-      ? requestedPath
-      : getRoleDefaultPath(session.role);
-
-    setTimeout(() => {
-      navigate(destination, { replace: true });
-    }, 150);
-  };
-
-  // Standard form submission handler
+  // Standard form submission handler (Connected to POST /api/auth/login)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
@@ -57,7 +40,12 @@ export default function SignInForm() {
 
     const trimmedEmail = email.trim();
     if (!trimmedEmail) {
-      setErrorMessage("Please enter your registered email address.");
+      setErrorMessage("Please enter your email.");
+      return;
+    }
+
+    if (!password) {
+      setErrorMessage("Please enter your password.");
       return;
     }
 
@@ -65,7 +53,7 @@ export default function SignInForm() {
     try {
       const response = await login({ email: trimmedEmail, password });
       if (response.success && response.session) {
-        setSuccessMessage(`Welcome back! Redirecting...`);
+        setSuccessMessage(`Welcome back, ${response.session.name}! Redirecting...`);
         const requestedPath = (location.state as { from?: { pathname?: string } })?.from?.pathname;
         const destination = requestedPath && requestedPath !== "/signin"
           ? requestedPath
@@ -73,12 +61,13 @@ export default function SignInForm() {
 
         setTimeout(() => {
           navigate(destination, { replace: true });
-        }, 150);
+        }, 200);
       } else {
-        setErrorMessage(response.error || "Authentication failed. Please try again.");
+        setErrorMessage(response.error || "Authentication failed. Please check your credentials.");
       }
-    } catch {
-      setErrorMessage("An unexpected error occurred. Please try again.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "An unexpected error occurred. Please try again.";
+      setErrorMessage(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -107,52 +96,8 @@ export default function SignInForm() {
               Sign In to Madrassa MIS
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Select your role directly or sign in with your credentials.
+              Enter your credentials to access the management portal.
             </p>
-          </div>
-
-          {/* 3 Temporary Role Buttons at the Top of Login Form */}
-          <div className="mb-6 rounded-xl border border-dashed border-brand-300 bg-brand-50/50 p-3.5 dark:border-brand-500/30 dark:bg-brand-500/10">
-            <div className="mb-2.5 flex items-center justify-between">
-              <span className="text-theme-xs font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-300">
-                1-Click Direct Role Access
-              </span>
-              <span className="text-[11px] text-gray-500 dark:text-gray-400">
-                Opens Dashboard
-              </span>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2">
-              {/* Admin Button */}
-              <button
-                type="button"
-                onClick={() => handleRoleSelect("ADMIN")}
-                className="flex items-center justify-center gap-1.5 rounded-lg border border-brand-200 bg-white py-2 px-2.5 text-xs font-semibold text-brand-700 shadow-xs transition-all hover:bg-brand-500 hover:text-white hover:border-brand-500 active:scale-95 dark:border-brand-500/30 dark:bg-gray-800 dark:text-brand-300 dark:hover:bg-brand-500 dark:hover:text-white"
-              >
-                <DashboardAltIcon className="size-4 shrink-0" />
-                <span>Admin</span>
-              </button>
-
-              {/* Teacher Button */}
-              <button
-                type="button"
-                onClick={() => handleRoleSelect("TEACHER")}
-                className="flex items-center justify-center gap-1.5 rounded-lg border border-blue-light-200 bg-white py-2 px-2.5 text-xs font-semibold text-blue-light-700 shadow-xs transition-all hover:bg-blue-light-500 hover:text-white hover:border-blue-light-500 active:scale-95 dark:border-blue-light-500/30 dark:bg-gray-800 dark:text-blue-light-300 dark:hover:bg-blue-light-500 dark:hover:text-white"
-              >
-                <CalendarAltIcon className="size-4 shrink-0" />
-                <span>Teacher</span>
-              </button>
-
-              {/* Student Button */}
-              <button
-                type="button"
-                onClick={() => handleRoleSelect("STUDENT")}
-                className="flex items-center justify-center gap-1.5 rounded-lg border border-success-200 bg-white py-2 px-2.5 text-xs font-semibold text-success-700 shadow-xs transition-all hover:bg-success-500 hover:text-white hover:border-success-500 active:scale-95 dark:border-success-500/30 dark:bg-gray-800 dark:text-success-300 dark:hover:bg-success-500 dark:hover:text-white"
-              >
-                <UserCircleIcon className="size-4 shrink-0" />
-                <span>Student</span>
-              </button>
-            </div>
           </div>
 
           {/* Feedback Alerts */}
@@ -168,15 +113,7 @@ export default function SignInForm() {
             </div>
           )}
 
-          {/* Divider */}
-          <div className="relative my-4 flex items-center justify-center">
-            <div className="w-full border-t border-gray-200 dark:border-gray-800" />
-            <span className="absolute bg-white px-3 text-xs text-gray-400 dark:bg-gray-900">
-              Or Sign In with Email
-            </span>
-          </div>
-
-          {/* Template Login Form */}
+          {/* Common Login Form for All Roles */}
           <div>
             <form onSubmit={handleSubmit}>
               <div className="space-y-4">
@@ -191,14 +128,14 @@ export default function SignInForm() {
                       setEmail(e.target.value);
                       if (errorMessage) setErrorMessage(null);
                     }}
-                    placeholder="e.g. admin@madrassa.com"
+                    placeholder="Enter your email (e.g. admin@gmail.com)"
                     autoComplete="email"
                   />
                 </div>
 
                 <div>
                   <Label>
-                    Password
+                    Password <span className="text-error-500">*</span>
                   </Label>
                   <div className="relative">
                     <Input
