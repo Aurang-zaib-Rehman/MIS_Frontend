@@ -191,6 +191,7 @@ export default function SignInForm() {
 
                 <div>
                   <Button
+                    type="submit"
                     className="w-full"
                     size="sm"
                     disabled={isSubmitting}
