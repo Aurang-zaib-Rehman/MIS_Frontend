@@ -1,67 +1,10 @@
 import PageMeta from "@/components/common/PageMeta";
 import PublicPageBanner from "@/components/public/PublicPageBanner";
 import BankDetailsCard from "@/components/public/BankDetailsCard";
-import DonationCampaignCard, {
-  type DonationCampaign,
-} from "@/components/public/DonationCampaignCard";
-import { MotionFadeIn, MotionStaggerContainer, MotionStaggerItem } from "@/components/public/Motion";
-import { CheckCircleIcon } from "@/icons";
-import React, { useRef } from "react";
-
-const campaigns: DonationCampaign[] = [
-  {
-    id: "student-sponsor",
-    title: "Annual Talib-e-Ilm Sponsorship",
-    category: "Zakat & Sadaqah",
-    description:
-      "Sponsor a deserving, orphan, or destitute student for an entire academic year covering boarding, nutritious meals, books, and medical care.",
-    targetAmount: 1800000,
-    raisedAmount: 1340000,
-    donorsCount: 84,
-    tag: "High Priority",
-  },
-  {
-    id: "hifz-fund",
-    title: "Hifz-ul-Quran Sustenance Fund",
-    category: "Sadaqah Jariyah",
-    description:
-      "Support the daily educational resources, Tajweed coaching, Mus'haf copies, and awards for young children memorizing the Holy Quran.",
-    targetAmount: 1200000,
-    raisedAmount: 920000,
-    donorsCount: 65,
-    tag: "Quranic Cause",
-  },
-  {
-    id: "mess-food",
-    title: "Daily Student Meals & Matbakh Fund",
-    category: "General Donations",
-    description:
-      "Provides two hot cooked meals daily for 500+ resident students living away from their families in pursuit of Islamic sciences.",
-    targetAmount: 2500000,
-    raisedAmount: 1750000,
-    donorsCount: 112,
-    tag: "Ongoing Needs",
-  },
-  {
-    id: "campus-expansion",
-    title: "Hostel Dormitory & Library Expansion",
-    category: "Waqf / Construction",
-    description:
-      "Expanding residential dormitories and study halls to accommodate over 200 newly admitted students for the upcoming session.",
-    targetAmount: 5000000,
-    raisedAmount: 3100000,
-    donorsCount: 140,
-    tag: "Building Waqf",
-  },
-];
+import { MotionFadeIn } from "@/components/public/Motion";
+import React from "react";
 
 export const Fundraising: React.FC = () => {
-  const bankDetailsRef = useRef<HTMLDivElement>(null);
-
-  const scrollToBankDetails = () => {
-    bankDetailsRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   return (
     <>
       <PageMeta
@@ -96,52 +39,11 @@ export const Fundraising: React.FC = () => {
             </p>
           </MotionFadeIn>
 
-          {/* Active Campaigns Grid */}
-          <div className="mb-16">
-            <MotionFadeIn direction="down" className="text-center max-w-2xl mx-auto mb-10">
-              <span className="text-xs font-semibold uppercase tracking-wider text-brand-600 dark:text-brand-400">
-                Active Projects &amp; Causes
-              </span>
-              <h2 className="mt-1 font-outfit text-3xl font-extrabold text-gray-900 sm:text-4xl dark:text-white">
-                Support a Specific Initiative
-              </h2>
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                Every rupee is tracked transparently in our digital financial ledger and utilized
-                strictly in compliance with Shariah guidelines.
-              </p>
-            </MotionFadeIn>
-
-            <MotionStaggerContainer className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {campaigns.map((camp) => (
-                <MotionStaggerItem key={camp.id} direction="up">
-                  <DonationCampaignCard
-                    campaign={camp}
-                    onDonateClick={scrollToBankDetails}
-                  />
-                </MotionStaggerItem>
-              ))}
-            </MotionStaggerContainer>
-          </div>
-
           {/* Transparent Bank Details Section */}
           <MotionFadeIn direction="left" className="w-full">
-            <div ref={bankDetailsRef}>
+            <div>
               <BankDetailsCard />
             </div>
-          </MotionFadeIn>
-
-          {/* Zakat & Shariah Compliance Notice */}
-          <MotionFadeIn direction="right" className="mt-12 rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
-            <h4 className="font-outfit font-bold text-gray-900 dark:text-white flex items-center gap-2">
-              <CheckCircleIcon className="size-5 text-success-500" />
-              <span>Zakat &amp; Financial Governance Policy</span>
-            </h4>
-            <p className="mt-2 text-xs leading-relaxed text-gray-600 dark:text-gray-300">
-              Madrasa Uloom-e-Islamia maintains separate ledgers for Zakat and general Sadaqat.
-              Zakat funds are exclusively utilized for eligible students (Mustahiq-e-Zakat, orphans,
-              and destitute Talaba) following the Tamleek verification process supervised by our
-              scholarly Shariah board.
-            </p>
           </MotionFadeIn>
         </div>
       </section>
